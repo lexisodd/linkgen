@@ -2,16 +2,101 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Generar redirección</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de redirecciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1e1b2e;
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #2a2642;
+      padding: 3rem 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #d6b1ff;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input {
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #372f4e;
+      color: white;
+      font-size: 1rem;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      background: linear-gradient(to right, #a855f7, #9333ea);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #9333ea, #7e22ce);
+    }
+
+    #resultado {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #86efac;
+    }
+
+    .error {
+      color: #fca5a5;
+    }
+  </style>
 </head>
 <body>
-  <h2>Nuevo link</h2>
-  <form id="form">
-    <input type="text" id="nombre" placeholder="Nombre del link" required />
-    <input type="url" id="enlace" placeholder="https://destino.com" required />
-    <button type="submit">Crear</button>
-  </form>
-  <div id="resultado" style="margin-top:20px;font-weight:bold;"></div>
+  <div class="container">
+    <h2>Crear redirección</h2>
+    <form id="form">
+      <input type="text" id="nombre" placeholder="Nombre del link" required />
+      <input type="url" id="enlace" placeholder="https://destino.com" required />
+      <button type="submit">Crear</button>
+    </form>
+    <div id="resultado"></div>
+  </div>
 
   <script>
     document.getElementById("form").addEventListener("submit", async (e) => {
@@ -21,6 +106,7 @@
       const resultado = document.getElementById("resultado");
 
       resultado.textContent = "Enviando...";
+      resultado.className = "";
 
       try {
         const res = await fetch("/.netlify/functions/addredirect", {
@@ -34,11 +120,14 @@
         const data = await res.json();
         if (res.ok) {
           resultado.textContent = `✅ Redirección creada: /${data.nombre}`;
+          resultado.className = "success";
         } else {
           resultado.textContent = `❌ Error: ${data.error || "Desconocido"}`;
+          resultado.className = "error";
         }
       } catch (error) {
         resultado.textContent = `❌ Error de red o función: ${error.message}`;
+        resultado.className = "error";
       }
     });
   </script>
