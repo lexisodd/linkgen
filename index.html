@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generar redirección</title>
+</head>
+<body>
+  <h2>Nuevo link</h2>
+  <form id="form">
+    <input type="text" id="nombre" placeholder="Nombre del link" required />
+    <input type="url" id="enlace" placeholder="https://destino.com" required />
+    <button type="submit">Crear</button>
+  </form>
+  <div id="resultado" style="margin-top:20px;font-weight:bold;"></div>
+
+  <script>
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const enlace = document.getElementById("enlace").value;
+      const resultado = document.getElementById("resultado");
+
+      resultado.textContent = "Enviando...";
+
+      try {
+        const res = await fetch("/.netlify/functions/addredirect", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ nombre, enlace }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          resultado.textContent = `✅ Redirección creada: /${data.nombre}`;
+        } else {
+          resultado.textContent = `❌ Error: ${data.error || "Desconocido"}`;
+        }
+      } catch (error) {
+        resultado.textContent = `❌ Error de red o función: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
